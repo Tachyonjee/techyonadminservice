@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const questionRoutes = require("./routes/questionRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,6 +23,7 @@ connectDB();
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/questions", questionRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

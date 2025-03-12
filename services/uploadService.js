@@ -77,7 +77,7 @@ exports.getClasses = async () => {
   
   // Fetch Subjects by Class
   exports.getSubjectsByClass = async (classId) => {
-    return await SubjectModel.find({ classId });
+    return await SubjectModel.find();
   };
   
   // Fetch Topics by Subject

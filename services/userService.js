@@ -1,7 +1,8 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const Teacher = require("../models/teachers");
+const Student = require("../models/student");
 // Generate JWT Token
 const generateToken = (user) => {
   return jwt.sign(
@@ -13,26 +14,42 @@ const generateToken = (user) => {
   );
 };
 
-// Register User
-const registerUser = async (userData) => {
-  try {
-    const existingUser = await User.findOne({ username: userData.username });
-    if (existingUser) {
-      throw new Error("Email already in use");
-    }
 
-    userData.password = await bcrypt.hash(userData.password, 10); // Hash password
-    const user = new User(userData);
-    await user.save();
-
-    return { message: "User registered successfully" };
-  } catch (error) {
-    throw new Error(error.message);
+// Register User with Role Handling
+exports.registerUser = async ({ name, username, password, role, mobile, subject, userClass }) => {
+  // Check if user exists
+  const existingUser = await User.findOne({ username });
+  if (existingUser) {
+    throw new Error("Username already exists");
   }
+
+  // Hash Password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create Base User
+  const newUser = await User.create({
+    name,
+    username,
+    password: hashedPassword,
+    mobile,
+    role,
+  });
+
+  // Role-specific inserts
+  if (role === "teacher") {
+    if (!subject || !userClass) throw new Error("Subject and Class are required for teachers");
+    await Teacher.create({ userId: newUser._id, subject, class: userClass });
+  } else if (role === "student") {
+    if (!userClass) throw new Error("Class is required for students");
+    await Student.create({ userId: newUser._id, class: userClass });
+  }
+
+  return newUser;
 };
 
+
 // Login User
-const loginUser = async (username, password) => {
+exports.loginUser = async (username, password) => {
   try {
     const user = await User.findOne({ username });
     if (!user) {
@@ -51,4 +68,3 @@ const loginUser = async (username, password) => {
   }
 };
 
-module.exports = { registerUser, loginUser };

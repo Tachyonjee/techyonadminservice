@@ -48,22 +48,51 @@ exports.registerUser = async ({ name, username, password, role, mobile, subject,
 };
 
 
-// Login User
 exports.loginUser = async (username, password) => {
   try {
+    // Check if user exists
     const user = await User.findOne({ username });
     if (!user) {
       throw new Error("Invalid username or password");
     }
 
+    // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new Error("Invalid username or password");
     }
 
+    // Fetch role based on user ID
+    let role = "admin"; // Default to admin if no other role found
+
+    // Check in Teacher collection
+    const teacher = await Teacher.findOne({ userId: user._id });
+    if (teacher) role = "teacher";
+
+    // Check in Student collection if not a teacher
+    if (!teacher) {
+      const student = await Student.findOne({ userId: user._id });
+      if (student) role = "student";
+    }
+
+    // Generate JWT Token
     const token = generateToken(user);
-    return { message: "Login successful", token };
+
+    // Return response with role and user info
+    return {
+      message: "Login successful",
+      token,
+      role,
+      user: {
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        mobile: user.mobile,
+      },
+    };
+
   } catch (error) {
+    console.error("Login Error:", error);
     throw new Error(error.message);
   }
 };

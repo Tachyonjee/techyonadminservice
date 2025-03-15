@@ -3,7 +3,7 @@ const fs = require("fs");
 const ClassModel = require("../models/classModel");
 const SubjectModel = require("../models/subjectModel");
 const TopicModel = require("../models/topicModel");
-const SubtopicModel = require("../models/subtopicModel");
+const SubtopicModel = require("../models/subTopicModel");
 
 exports.processExcel = async (filePath) => {
   try {

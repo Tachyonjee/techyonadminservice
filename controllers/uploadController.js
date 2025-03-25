@@ -26,7 +26,7 @@ exports.getClasses = async (req, res) => {
 
 exports.getSubjectsByClass = async (req, res) => {
   try {
-    const subjects = await uploadService.getSubjectsByClass(req.params.classId);
+    const subjects = await uploadService.getSubjectsByClass();
     res.status(200).json(subjects);
   } catch (error) {
     res.status(500).json({ message: "Error fetching subjects", error });

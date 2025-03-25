@@ -33,7 +33,7 @@ exports.insertQuestion = async (req, res) => {
 exports.getQuestionsByTopic = async (req, res) => {
   try {
     const questions = await questionService.getQuestionsByTopic(req.params.topicId);
-    res.status(200).json(questions);
+    return res.status(200).json(questions);
   } catch (error) {
     res.status(500).json({ message: "Error fetching questions by topic", error });
   }
@@ -42,11 +42,20 @@ exports.getQuestionsByTopic = async (req, res) => {
 exports.getQuestionsBySubTopic = async (req, res) => {
   try {
     const questions = await questionService.getQuestionsBySubtopic(req.params.subTopicId);
-    res.status(200).json(questions);
+    return res.status(200).json(questions);
   } catch (error) {
     res.status(500).json({ message: "Error fetching questions by subTopic", error });
   }
 };
+
+exports.getQuestionsBySubject = async (req, res) => {
+  try {
+    const questions = await questionService.getQuestionsBySubject(req.params.subjectId);
+   res.status(200).json(questions);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching questions by subTopic", error });
+  }
+}
 
 exports.updateQuestion = async (req, res) => {
   try {

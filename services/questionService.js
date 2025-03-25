@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Question = require("../models/questionModel");
 
 exports.insertQuestion = async (questionData) => {
@@ -10,11 +11,35 @@ exports.insertQuestion = async (questionData) => {
 };
 
 exports.getQuestionsByTopic = async (topicId) => {
-  return await Question.find({ topicId }).populate("classId subjectId topicId subtopicId");
+  return await Question.find({ topicId })
 };
 
 exports.getQuestionsBySubtopic = async (subtopicId) => {
-  return await Question.find({ subtopicId }).populate("classId subjectId topicId subtopicId");
+  try {
+    if (!mongoose.Types.ObjectId.isValid(subtopicId)) {
+      throw new Error("Invalid subtopic ID format");
+    }
+
+    return await Question.find({ subtopicId: new mongoose.Types.ObjectId(subtopicId) });
+      
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+exports.getQuestionsBySubject = async (subjectId) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+      throw new Error("Invalid subjectId ID format");
+    }
+
+    const data = await Question.find({ subjectId: new mongoose.Types.ObjectId(subjectId) })
+      
+      console.log("asfasfasd", data);
+      return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 exports.updateQuestion = async (id, updateData) => {

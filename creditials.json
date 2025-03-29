@@ -1,0 +1,26 @@
+[{
+    "name": "admin",
+    "username": "admin",
+    "password": "admin",
+    "mobile": "646546424",
+    "role": "admin"
+  },
+  
+  {
+    "name": "student",
+    "username": "student",
+    "password": "student",
+    "mobile": "646546423",
+    "role": "student",
+    "class": "Class 11"
+  },
+  {
+      "name": "MainTeacher",
+      "username": "teachers",
+      "password": "teachersPassword",
+      "mobile": "6465464123",
+      "role": "teacher",
+      "class": "Class 11",
+      "subject":"Physics"
+    }
+]

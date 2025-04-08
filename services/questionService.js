@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const Question = require("../models/questionModel");
+const Class = require("../models/classModel");
+const Subject = require("../models/subjectModel");
+const Topic = require("../models/topicModel");
+const Subtopic = require("../models/subTopicModel");
 
 exports.insertQuestion = async (questionData) => {
   try {
@@ -16,14 +20,48 @@ exports.getQuestionsByTopic = async (topicId) => {
 
 exports.getQuestionsBySubtopic = async (subtopicId) => {
   try {
+    console.log("Received subtopicId:", subtopicId);
+    
+    if (!subtopicId) {
+      throw new Error("SubTopic ID is required");
+    }
+
     if (!mongoose.Types.ObjectId.isValid(subtopicId)) {
+      console.error("Invalid ObjectId format:", subtopicId);
       throw new Error("Invalid subtopic ID format");
     }
 
-    return await Question.find({ subtopicId: new mongoose.Types.ObjectId(subtopicId) });
+    const objectId = new mongoose.Types.ObjectId(subtopicId);
+    console.log("Converted to ObjectId:", objectId);
+
+    const questions = await Question.find({ subtopicId: objectId })
+      .populate({
+        path: 'classId',
+        model: 'Standard'
+      })
+      .populate({
+        path: 'subjectId',
+        model: 'Subject'
+      })
+      .populate({
+        path: 'topicId',
+        model: 'Topic'
+      })
+      .populate({
+        path: 'subtopicId',
+        model: 'Subtopic'
+      });
       
+    console.log("Found questions:", questions);
+
+    if (!questions || questions.length === 0) {
+      return [];
+    }
+
+    return questions;
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error in getQuestionsBySubtopic:", error);
+    throw error;
   }
 };
 

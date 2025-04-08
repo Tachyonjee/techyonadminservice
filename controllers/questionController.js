@@ -41,10 +41,33 @@ exports.getQuestionsByTopic = async (req, res) => {
 
 exports.getQuestionsBySubTopic = async (req, res) => {
   try {
-    const questions = await questionService.getQuestionsBySubtopic(req.params.subTopicId);
-    return res.status(200).json(questions);
+    const subtopicId = req.params.subtopicId;
+    if (!subtopicId) {
+      return res.status(400).json({
+        success: false,
+        message: "SubTopic ID is required"
+      });
+    }
+
+    const questions = await questionService.getQuestionsBySubtopic(subtopicId);
+    return res.status(200).json({
+      success: true,
+      data: questions
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching questions by subTopic", error });
+    console.error("Error in getQuestionsBySubTopic:", error);
+    if (error.message === "Invalid subtopic ID format") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid SubTopic ID format",
+        error: error.message
+      });
+    }
+    res.status(500).json({ 
+      success: false,
+      message: "Error fetching questions by subTopic",
+      error: error.message 
+    });
   }
 };
 
